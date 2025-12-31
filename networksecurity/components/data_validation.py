@@ -93,11 +93,13 @@ class DataValidation:
             test_file_path = self.data_ingestion_artifacts.test_file_path
 
             # read the data from train and test 
+            logging.info("Reading of the train and test data is happen")
             train_dataframe = DataValidation.read_data(train_file_path)
             test_dataframe = DataValidation.read_data(test_file_path)
 
             error_message=""
 
+            logging.info("Validation of number of columns")
             # validate number of columns
             status = self.validate_number_of_columns(dataframe=train_dataframe)
 
@@ -109,7 +111,7 @@ class DataValidation:
             if not status:
                 error_message += f"Test data frame does not contain all columns.\n"
             
-
+            logging.info("Validation of number of numerical columns")
             # validate number of numerical columns
             status = self.validate_numerical_columns(dataframe=train_dataframe)
             
@@ -124,18 +126,22 @@ class DataValidation:
             if error_message !="":
                 raise NetworkSecurityException(error_message)
             
-
+            
             # lets check the data drift
             status = self.detect_dataset_drift(base_df=train_dataframe,current_df=test_dataframe)
+            logging.info("Checking the data drift")
+
             dir_path = os.path.dirname(self.data_validation_config.valid_train_file_path)
             os.makedirs(dir_path,exist_ok=True)
-
+            
+            logging.info("saving valid train  and test file")
             train_dataframe.to_csv(self.data_validation_config.valid_train_file_path,
                                    index=False,header=True
             )
             test_dataframe.to_csv(self.data_validation_config.valid_test_file_path,
                                   index=False,header=True
             )
+            
             data_validation_artifact = DataValidationArtifacts(
                 validaion_status = status,
                 valid_train_file_path = self.data_validation_config.valid_train_file_path,
