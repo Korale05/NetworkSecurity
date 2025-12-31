@@ -18,7 +18,8 @@ import pymongo
 from networksecurity.logging.logger import logging
 from networksecurity.exception.exception import NetworkSecurityException
 
-class NetworkDataExtrace():
+
+class NetworkDataExtract():
     def __init__(self):
         try:
             pass
@@ -60,7 +61,7 @@ if __name__=='__main__':
     FILE_PATH = "Network_Data\phisingData.csv"
     DATABASE = "onkarai"
     collection = "NetworkData"
-    network_obj = NetworkDataExtrace()
+    network_obj = NetworkDataExtract()
     records = network_obj.csv_to_json_convertor(FILE_PATH)
     len_of_records= network_obj.insert_data_mongodb(records,DATABASE,collection)
     print(len_of_records)

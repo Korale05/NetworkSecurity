@@ -4,8 +4,21 @@ from networksecurity.logging.logger import logging
 import pandas as pd
 import numpy as np
 
+"""
+In this file we store the output of the each file we strore means at the end of the file
+what the output it gives 
+"""
 
 @dataclass
 class DataIngestionArtifacts:
     trained_file_path : str
     test_file_path : str
+
+@dataclass
+class DataValidationArtifacts:
+    validaion_status : bool
+    valid_train_file_path : str
+    valid_test_file_path : str
+    invalid_train_file_path : str
+    invalid_test_file_path : str
+    drift_report_file_path : str
