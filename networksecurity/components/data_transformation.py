@@ -65,11 +65,13 @@ class DataTransformation:
             logging.info("Starting data transformation")
             train_df = DataTransformation.read_data(self.data_validation_artifacts.valid_train_file_path)
             test_df = DataTransformation.read_data(self.data_validation_artifacts.valid_test_file_path)
+            logging.info("Reading data")
 
             ## training dataframe
             input_feature_train_df = train_df.drop(columns=[TARGET_COLUMN])
             target_feature_train_df = train_df[TARGET_COLUMN]
             target_feature_train_df = target_feature_train_df.replace(-1,0)
+            logging.info("seperating target and input feature and replacing -1 to 0")
 
             #testing dataframe
             input_feature_test_df = test_df.drop(columns=[TARGET_COLUMN])
@@ -81,6 +83,7 @@ class DataTransformation:
             transformed_input_train_feature = preprocessor_object.transform(input_feature_train_df)
             transformed_input_test_feature = preprocessor.transform(input_feature_test_df)
 
+            logging.info("Combining the transformed input feature and target feature")
             train_arr = np.c_[transformed_input_train_feature,np.array(target_feature_train_df)]
             test_arr = np.c_[transformed_input_test_feature,np.array(target_feature_test_df)]
 
@@ -90,6 +93,7 @@ class DataTransformation:
             save_object(self.data_transformation_config.transformed_object_file_path,preprocessor_object)
 
             #preparing artifacts
+            logging.info("preparing data transformation artifacts")
             data_transformation_Artifact = DataTransformationArtifacts(
                 transformed_object_file_path  = self.data_transformation_config.transformed_object_file_path,
                 transformed_train_file_path = self.data_transformation_config.data_transformed_train_file_path,
