@@ -27,8 +27,10 @@ from xgboost import XGBClassifier
 from catboost import CatBoostClassifier
 import mlflow
 
-import dagshub
-dagshub.init(repo_owner='Korale05', repo_name='NetworkSecurity', mlflow=True)
+if os.getenv("ENABLE_DAGSHUB", "false").lower() == "true":
+    import dagshub
+    dagshub.init(repo_owner='Korale05', repo_name='NetworkSecurity', mlflow=True)
+
 
 
 
