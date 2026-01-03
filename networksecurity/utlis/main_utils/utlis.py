@@ -119,7 +119,7 @@ def evaluate_models(x_train,y_train,x_test,y_test,models : dict,params):
                   # log model
                 mlflow.sklearn.log_model(model,"Model")
 
-             # store result
+            # store result
             report[name] = test_model_score
         return report
 

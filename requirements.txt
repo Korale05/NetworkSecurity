@@ -10,4 +10,8 @@ pyaml
 xgboost
 catboost
 mlflow
+dagshub
+fastapi
+uvicorn
+flask
 ##-e .

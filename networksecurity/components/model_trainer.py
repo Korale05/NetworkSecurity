@@ -27,6 +27,11 @@ from xgboost import XGBClassifier
 from catboost import CatBoostClassifier
 import mlflow
 
+import dagshub
+dagshub.init(repo_owner='Korale05', repo_name='NetworkSecurity', mlflow=True)
+
+
+
 class ModelTrainer:
     def __init__(self,model_trainer_config : ModelTrainerConfig,data_transformation_artifacts : DataTransformationArtifacts):
         try:
@@ -136,8 +141,8 @@ class ModelTrainer:
                     "random_strength": [1, 2, 5]
                 }
             }
-            models_report : dict = evaluate_models(x_train = x_train,y_train = y_train,x_test= x_test,y_test=y_test,
-                                            models = models,params = params)
+            models_report : dict = evaluate_models(x_train,y_train,x_test,y_test,models,params)
+
             # To get best model score from dict
             best_model_score = max(sorted(models_report.values()))
 
@@ -169,6 +174,8 @@ class ModelTrainer:
 
             save_object(file_path=self.model_trainer_config.trained_model_file_path,obj=Network_Model)
 
+            save_object("final_model/model.pkl",best_model)
+            
             #Model trainer Artifacts
             model_trainer_artifact = ModelTrainerArtifacts(
                 trained_model_file_path=self.model_trainer_config.trained_model_file_path,
@@ -200,7 +207,8 @@ class ModelTrainer:
                 test_arr[:,:-1],
                 test_arr[:,-1]
             )
-            model = self.train_model(x_train,y_train,x_test,y_test)
+            model_trainer_artifacts = self.train_model(x_train,y_train,x_test,y_test)
+            return model_trainer_artifacts
 
         except Exception as e:
             raise NetworkSecurityException(e,sys)
