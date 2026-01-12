@@ -1,249 +1,118 @@
-# Hey this is my network security project ## 
-## lets goooooooooooooooooooooooooooooooo
+🛡️ Phishing URL Detection System
+A machine learning system that detects phishing URLs with 97.6% accuracy using CatBoost algorithm.
+📖 What is This?
+Enter any URL and get instant prediction whether it's a phishing (malicious) site or legitimate. The system analyzes URL patterns and security features to identify suspicious websites.
+✨ Features
+
+High Accuracy Model: 97.6% F1-score, 98.6% recall, 96.6% precision
+Web Interface: Easy-to-use Flask application
+REST API: Real-time predictions
+Batch Processing: Check multiple URLs at once
+MLflow Tracking: 10+ experiments for model optimization
+MongoDB Backend: Scalable data storage
+Docker Ready: Containerized deployment
+
+🚀 Quick Start
+Using Docker
+bashdocker pull onkar1718/networksecurity-app:latest
+docker run -p 5000:5000 onkar1718/networksecurity-app:latest
+
+# Visit http://localhost:5000
+Local Setup
+bashgit clone https://github.com/Korale05/NetworkSecurity.git
+cd NetworkSecurity
+pip install -r requirements.txt
+python app.py
+
+# Visit http://localhost:5000
+💻 Usage
+Web Interface
+
+Open http://localhost:5000 in your browser
+Enter a URL or upload CSV file with multiple URLs
+Click "Check" to get predictions
+View results with confidence scores
+
+API Example
+import requests
+
+
+data = {
+    "url": "https://suspicious-site.com/login",
+    "url_length": 45,
+    "num_dots": 3,
+    "num_hyphens": 1,
+    "num_underscores": 0,
+    "num_slash": 2,
+    "num_questionmark": 0,
+    "num_equal": 0,
+    "num_at": 0,
+    "num_and": 0,
+    "num_exclamation": 0,
+    "num_space": 0,
+    "num_tilde": 0,
+    "num_comma": 0,
+    "num_plus": 0,
+    "num_asterisk": 0,
+    "num_hashtag": 0,
+    "num_dollar": 0,
+    "num_percent": 0,
+    "has_ip": 0,
+    "has_https": 1
+}
+
+response = requests.post('http://localhost:5000/predict', json=data)
+print(response.json())
+
+# Output: {"prediction": "phishing", "confidence": 0.94, "risk_level": "high"}
+
+📊 Model Performance
+Algorithm: CatBoost Classifier
+
+F1-Score: 97.6%
+Recall: 98.6% (catches most phishing URLs)
+Precision: 96.6% (very few false alarms)
+Accuracy: 97.8%
+
+🏗️ Project Structure
+NetworkSecurity/
+├── networksecurity/
+│   ├── components/         # ML pipeline components
+│   ├── pipeline/           # Training & prediction pipelines
+│   ├── cloud/              # MongoDB integration
+│   └── logging/            # Logging system
+├── templates/              # Flask web interface
+├── notebooks/              # Data analysis
+├── app.py                  # Flask application
+├── main.py                 # Model training
+├── Dockerfile              # Container configuration
+└── requirements.txt
+
+🤖 Training
+Run the training pipeline:
+bashpython main.py
+This will train the model and save it with MLflow experiment tracking.
+
+📊 URL Features Analyzed
+The model examines 20+ security features:
+
+URL length and structure
+Number of special characters (dots, hyphens, slashes)
+Security indicators (HTTPS, IP address usage)
+Suspicious patterns
 
-# Data Ingestion → Data Validation → Data Transformation → Training → Evaluation → Deployment
+🛠️ Tech Stack
 
+ML: CatBoost, scikit-learn
+Tracking: MLflow, DagsHub
+Backend: Flask, MongoDB
+Deployment: Docker
 
+🔗 Links
 
-# 📥 Data Ingestion Module
+GitHub: https://github.com/Korale05/NetworkSecurity
+DockerHub: https://hub.docker.com/r/onkar1718/networksecurity-app
+DagsHub: https://dagshub.com/Korale05/NetworkSecurity
 
-The Data Ingestion module is responsible for extracting raw network security data from MongoDB, storing it as feature-store data, and preparing clean train/test datasets for downstream pipeline stages.
-
-This is the first step in the ML pipeline.
-
-🎯 Objectives
-
-This module:
-
-✔ Connects securely to MongoDB
-✔ Loads data into a pandas DataFrame
-✔ Cleans system-generated _id fields
-✔ Stores a local feature-store copy
-✔ Splits data into train & test sets
-✔ Saves outputs as versioned artifacts
-
-It ensures every pipeline run uses consistent, reproducible data.
-
-🧠 Class: DataIngestion
-Inputs
-
-Provided via DataIngestionConfig:
-
-Setting	Purpose
-database_name	MongoDB database
-collection_name	MongoDB collection
-feature_store_file_path	Path to store raw dataset
-training_file_path	Path for training dataset
-testing_file_path	Path for testing dataset
-train_test_split_ratio	% test size
-
-MongoDB connection is read from:
-
-MONGO_DB_URL (env variable)
-
-📤 Outputs
-
-Returns a DataIngestionArtifacts object:
-
-Field	Description
-trained_file_path	Path to training CSV
-test_file_path	Path to testing CSV
-
-These files are used by Data Validation next.
-
-⚙️ Processing Workflow
-┌──────────────────────────────┐
-│ Connect to MongoDB           │
-└───────────────┬──────────────┘
-                ▼
-┌──────────────────────────────┐
-│ Load Collection into DataFrame│
-└───────────────┬──────────────┘
-                ▼
-┌──────────────────────────────┐
-│ Remove _id Column            │
-└───────────────┬──────────────┘
-                ▼
-┌──────────────────────────────┐
-│ Save Raw Data (Feature Store)│
-└───────────────┬──────────────┘
-                ▼
-┌──────────────────────────────┐
-│ Train–Test Split             │
-└───────────────┬──────────────┘
-                ▼
-┌──────────────────────────────┐
-│ Save Train & Test Files      │
-└──────────────────────────────┘
-
-🧪 Key Features
-1️⃣ Extract Data from MongoDB
-
-The module connects to MongoDB and loads the full dataset into a pandas DataFrame:
-
-✔ reads all records
-✔ converts to DataFrame
-✔ drops _id column
-✔ replaces "na" with NaN
-
-This ensures ML-ready data.
-
-2️⃣ Feature Store Export
-
-The raw dataset is stored locally as:
-
-feature_store_file_path
-
-
-Purpose:
-
-✔ reproducibility
-✔ offline access
-✔ audit trail
-
-3️⃣ Train–Test Split
-
-Performed using sklearn.model_selection.train_test_split:
-
-Reproducible via random_state=42
-
-Test size configurable
-
-Train & Test saved separately
-
-📁 Artifacts Created
-
-Example structure:
-
-Artifacts/
- └── <timestamp>/
-     ├── data_ingestion/
-     │   ├── feature_store.csv
-     │   ├── train.csv
-     │   └── test.csv
-
-🚨 Error Handling
-
-All failures are wrapped into:
-
-NetworkSecurityException
-
-
-Ensuring:
-
-✔ clear stack trace
-✔ consistent error logging
-✔ graceful pipeline failure
-
-🎯 Why Data Ingestion Matters
-
-This step guarantees that:
-
-✔ data is versioned
-✔ sources are traceable
-✔ splits are consistent
-✔ pipeline remains stable
-
-It sets a strong foundation for the ML workflow.
-
-
-
-# 🧩 Data Validation Module — Overview
-
-This module validates the ingested training and test datasets before they enter the ML pipeline. The goal is to ensure the data schema is correct and to detect potential data drift between training and testing splits.
-
-✔ Key Responsibilities
-1️⃣ Load Schema Configuration
-
-Reads the schema YAML file
-
-Uses it to validate:
-
-Expected columns
-
-Numerical column count
-
-2️⃣ Read Input CSV Files
-
-Utility method:
-
-read_data(path)
-
-
-Loads CSV files into pandas DataFrames.
-
-3️⃣ Validate Schema
-✔ Check column count
-
-Verifies that the dataset contains the exact number of expected columns.
-
-✔ Validate numerical columns
-
-Confirms the number of numeric-type columns matches what the schema defines.
-
-If any mismatch occurs → validation fails.
-
-4️⃣ Detect Data Drift (KS Test)
-
-Uses Kolmogorov–Smirnov test (ks_2samp) to compare:
-
-train distribution  vs  test distribution
-
-
-for each feature.
-
-If p-value ≥ 0.05 → no drift
-
-If p-value < 0.05 → drift detected
-
-A YAML report is created and stored at:
-
-drift_report_file_path
-
-5️⃣ Save Validated Datasets
-
-If validation succeeds:
-
-Train → valid_train_file_path
-
-Test → valid_test_file_path
-
-Both are saved in CSV format.
-
-6️⃣ Return Validation Artifact
-
-Builds and returns a DataValidationArtifacts object containing:
-
-Field	Meaning
-validaion_status	Whether data passed validation
-valid_train_file_path	Path to cleaned train data
-valid_test_file_path	Path to cleaned test data
-invalid_train_file_path	(Reserved for future use)
-invalid_test_file_path	(Reserved for future use)
-drift_report_file_path	YAML drift report
-
-This artifact is then used by the next pipeline stage.
-
-🚨 Error Handling
-
-Any exception is wrapped and raised as:
-
-NetworkSecurityException
-
-
-So the pipeline stops safely with meaningful logs.
-
-🎯 Why This Step Matters
-
-Data validation prevents:
-
-✔ training on corrupted data
-✔ schema mismatch crashes
-✔ silent performance degradation due to drift
-
-It keeps the ML pipeline reliable and reproducible.
-
-
-
-
-
+📄 License
+MIT License
