@@ -1,118 +1,279 @@
-🛡️ Phishing URL Detection System
-A machine learning system that detects phishing URLs with 97.6% accuracy using CatBoost algorithm.
-📖 What is This?
-Enter any URL and get instant prediction whether it's a phishing (malicious) site or legitimate. The system analyzes URL patterns and security features to identify suspicious websites.
-✨ Features
+# 🛡️ Phishing URL Detection System
 
-High Accuracy Model: 97.6% F1-score, 98.6% recall, 96.6% precision
-Web Interface: Easy-to-use Flask application
-REST API: Real-time predictions
-Batch Processing: Check multiple URLs at once
-MLflow Tracking: 10+ experiments for model optimization
-MongoDB Backend: Scalable data storage
-Docker Ready: Containerized deployment
+A machine learning system that detects phishing URLs using a **CatBoost Classifier**, achieving **97.6% F1-score**, **98.6% Recall**, and **96.6% Precision**.
 
-🚀 Quick Start
-Using Docker
-bashdocker pull onkar1718/networksecurity-app:latest
+> Detect malicious URLs in real time using machine learning and URL-based security features.
+
+![Python](https://img.shields.io/badge/Python-3.10+-blue)
+![CatBoost](https://img.shields.io/badge/Model-CatBoost-orange)
+![Flask](https://img.shields.io/badge/Backend-Flask-green)
+![MongoDB](https://img.shields.io/badge/Database-MongoDB-brightgreen)
+![Docker](https://img.shields.io/badge/Deployment-Docker-blue)
+![License](https://img.shields.io/badge/License-MIT-yellow)
+
+---
+
+# 📊 Model Performance
+
+| Metric    | Score |
+| --------- | ----- |
+| Accuracy  | 97.8% |
+| F1-Score  | 97.6% |
+| Recall    | 98.6% |
+| Precision | 96.6% |
+
+### Model
+
+* Algorithm: CatBoost Classifier
+* Experiment Tracking: MLflow + DagsHub
+* Experiments Conducted: 10+
+
+---
+
+# 📖 Project Overview
+
+This project identifies phishing websites by analyzing structural and security-related URL characteristics.
+
+The system extracts more than 20 handcrafted features from a URL and uses a trained CatBoost model to classify it as:
+
+* ✅ Legitimate
+* 🚨 Phishing
+
+The application supports:
+
+* Single URL prediction
+* Batch URL prediction via CSV upload
+* REST API inference
+* Docker deployment
+* Experiment tracking with MLflow
+
+---
+
+# 🏗️ System Architecture
+
+User URL
+↓
+Feature Extraction
+↓
+CatBoost Model
+↓
+Prediction + Confidence Score
+↓
+Flask API / Web Interface
+
+---
+
+# ✨ Features
+
+* High-performance CatBoost model
+* Flask web application
+* REST API for real-time predictions
+* Batch CSV prediction
+* MongoDB integration
+* MLflow experiment tracking
+* Docker containerization
+* Modular training and inference pipelines
+
+---
+
+# 📂 Project Structure
+
+```text
+NetworkSecurity/
+│
+├── networksecurity/
+│   ├── components/          # Data ingestion, validation, training
+│   ├── pipeline/            # Training & prediction pipelines
+│   ├── cloud/               # MongoDB integration
+│   ├── exception/           # Custom exceptions
+│   ├── logging/             # Logging configuration
+│   └── utils/               # Utility functions
+│
+├── notebooks/               # EDA and experimentation
+├── templates/               # HTML templates
+├── static/                  # CSS / JS assets
+│
+├── app.py                   # Flask application
+├── main.py                  # Training pipeline entry point
+├── Dockerfile               # Docker configuration
+├── requirements.txt         # Project dependencies
+├── setup.py                 # Package setup
+└── README.md
+```
+
+---
+
+# 🚀 Quick Start
+
+## Option 1 — Docker
+
+```bash
+docker pull onkar1718/networksecurity-app:latest
+
 docker run -p 5000:5000 onkar1718/networksecurity-app:latest
+```
 
-# Visit http://localhost:5000
-Local Setup
-bashgit clone https://github.com/Korale05/NetworkSecurity.git
+Open:
+
+```text
+http://localhost:5000
+```
+
+---
+
+## Option 2 — Local Installation
+
+```bash
+git clone https://github.com/Korale05/NetworkSecurity.git
+
 cd NetworkSecurity
+
 pip install -r requirements.txt
+
 python app.py
+```
 
-# Visit http://localhost:5000
-💻 Usage
-Web Interface
+Open:
 
-Open http://localhost:5000 in your browser
-Enter a URL or upload CSV file with multiple URLs
-Click "Check" to get predictions
-View results with confidence scores
+```text
+http://localhost:5000
+```
 
-API Example
+---
+
+# 💻 Usage
+
+## Web Interface
+
+1. Launch the application
+2. Enter a URL
+3. Click Predict
+4. View prediction and confidence score
+
+---
+
+## Batch Prediction
+
+Upload a CSV file containing URLs and receive predictions for all entries.
+
+---
+
+## REST API
+
+### Endpoint
+
+```http
+POST /predict
+```
+
+### Example Request
+
+```python
 import requests
 
+response = requests.post(
+    "http://localhost:5000/predict",
+    json=data
+)
 
-data = {
-    "url": "https://suspicious-site.com/login",
-    "url_length": 45,
-    "num_dots": 3,
-    "num_hyphens": 1,
-    "num_underscores": 0,
-    "num_slash": 2,
-    "num_questionmark": 0,
-    "num_equal": 0,
-    "num_at": 0,
-    "num_and": 0,
-    "num_exclamation": 0,
-    "num_space": 0,
-    "num_tilde": 0,
-    "num_comma": 0,
-    "num_plus": 0,
-    "num_asterisk": 0,
-    "num_hashtag": 0,
-    "num_dollar": 0,
-    "num_percent": 0,
-    "has_ip": 0,
-    "has_https": 1
-}
-
-response = requests.post('http://localhost:5000/predict', json=data)
 print(response.json())
+```
 
-# Output: {"prediction": "phishing", "confidence": 0.94, "risk_level": "high"}
+### Example Response
 
-📊 Model Performance
-Algorithm: CatBoost Classifier
+```json
+{
+  "prediction": "phishing",
+  "confidence": 0.94,
+  "risk_level": "high"
+}
+```
 
-F1-Score: 97.6%
-Recall: 98.6% (catches most phishing URLs)
-Precision: 96.6% (very few false alarms)
-Accuracy: 97.8%
+---
 
-🏗️ Project Structure
-NetworkSecurity/
-├── networksecurity/
-│   ├── components/         # ML pipeline components
-│   ├── pipeline/           # Training & prediction pipelines
-│   ├── cloud/              # MongoDB integration
-│   └── logging/            # Logging system
-├── templates/              # Flask web interface
-├── notebooks/              # Data analysis
-├── app.py                  # Flask application
-├── main.py                 # Model training
-├── Dockerfile              # Container configuration
-└── requirements.txt
+# 🤖 Model Training
 
-🤖 Training
-Run the training pipeline:
-bashpython main.py
-This will train the model and save it with MLflow experiment tracking.
+Run the complete training pipeline:
 
-📊 URL Features Analyzed
-The model examines 20+ security features:
+```bash
+python main.py
+```
 
-URL length and structure
-Number of special characters (dots, hyphens, slashes)
-Security indicators (HTTPS, IP address usage)
-Suspicious patterns
+This performs:
 
-🛠️ Tech Stack
+1. Data ingestion
+2. Data validation
+3. Feature engineering
+4. Model training
+5. Model evaluation
+6. MLflow logging
 
-ML: CatBoost, scikit-learn
-Tracking: MLflow, DagsHub
-Backend: Flask, MongoDB
-Deployment: Docker
+---
 
-🔗 Links
+# 📊 Feature Engineering
 
-GitHub: https://github.com/Korale05/NetworkSecurity
-DockerHub: https://hub.docker.com/r/onkar1718/networksecurity-app
-DagsHub: https://dagshub.com/Korale05/NetworkSecurity
+The model analyzes 20+ URL-based features, including:
 
-📄 License
-MIT License
+### Structural Features
+
+* URL Length
+* Number of Dots
+* Number of Slashes
+* Number of Hyphens
+* Number of Special Characters
+
+### Security Features
+
+* HTTPS Presence
+* IP Address Usage
+* Suspicious Patterns
+
+### Lexical Features
+
+* Character Distribution
+* URL Complexity Indicators
+
+---
+
+# 🛠️ Technology Stack
+
+| Layer               | Technology             |
+| ------------------- | ---------------------- |
+| Machine Learning    | CatBoost, Scikit-learn |
+| Backend             | Flask                  |
+| Database            | MongoDB                |
+| Experiment Tracking | MLflow, DagsHub        |
+| Deployment          | Docker                 |
+| Language            | Python                 |
+
+---
+
+# 🔗 Links
+
+### GitHub Repository
+
+https://github.com/Korale05/NetworkSecurity
+
+### Docker Hub
+
+https://hub.docker.com/r/onkar1718/networksecurity-app
+
+### DagsHub
+
+https://dagshub.com/Korale05/NetworkSecurity
+
+---
+
+# 📄 License
+
+This project is licensed under the MIT License.
+
+---
+
+# 👤 Author
+
+Onkar Korale
+
+GitHub: https://github.com/Korale05
+
+Machine Learning • MLOps • Security Analytics
